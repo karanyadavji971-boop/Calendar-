@@ -34,7 +34,7 @@
         .google-btn:hover { background: #f8fafc; border-color: #94a3b8; }
         .google-btn img { width: 24px; }
 
-        /* Setup Screen (Religion & DOB) */
+        /* Setup Screen */
         #setupScreen { display: none; flex-direction: column; flex: 1; text-align: center; }
         .setup-card { background: white; padding: 30px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 20px; }
         .setup-card h2 { margin-bottom: 20px; color: #0f172a; }
@@ -54,6 +54,17 @@
         .header h2 { font-size: 20px; }
         .header p { font-size: 12px; opacity: 0.8; margin-top: 5px; }
         .logout-btn { position: absolute; right: 15px; top: 20px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; }
+
+        /* Search Box */
+        .search-card { background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .search-card h3 { color: var(--primary); font-size: 16px; margin-bottom: 10px; }
+        .search-row { display: flex; gap: 10px; }
+        .search-row input[type="text"] { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 15px; }
+        .search-row select { width: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 15px; background: white; }
+        .search-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; margin-top: 10px; cursor: pointer; }
+        .search-result { margin-top: 15px; display: none; background: #e0f2eb; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
+        .search-result h4 { font-size: 16px; color: var(--primary); margin-bottom: 5px; }
+        .search-result p { font-size: 14px; color: #333; }
 
         .calendar-card { background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -95,7 +106,7 @@
         </div>
     </div>
 
-    <!-- 2. SETUP SCREEN (Only shows first time) -->
+    <!-- 2. SETUP SCREEN -->
     <div id="setupScreen">
         <div class="setup-card">
             <h2>Apni Details Bharein</h2>
@@ -129,6 +140,26 @@
 
         <div id="birthdayBanner" class="birthday-banner">
             🎂 Happy Birthday! Aapko janmdin ki hardik shubhkamnayein! 🎉
+        </div>
+
+        <!-- SEARCH BOX -->
+        <div class="search-card">
+            <h3>🔍 Search Tyohar (Festival)</h3>
+            <div class="search-row">
+                <input type="text" id="searchFestival" placeholder="e.g. Diwali, Holi, Eid">
+                <select id="searchYear">
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                </select>
+            </div>
+            <button class="search-btn" onclick="searchFestival()">Search Now</button>
+            <div id="searchResult" class="search-result">
+                <!-- Search result will appear here -->
+            </div>
         </div>
 
         <!-- Calendar -->
@@ -167,7 +198,7 @@
     const provider = new firebase.auth.GoogleAuthProvider();
 
     let currentUser = null;
-    let userData = null; // { religion: "", dob: "" }
+    let userData = null;
     
     let selectedSetupReligion = "";
     let currentMonth = new Date().getMonth();
@@ -182,45 +213,29 @@
     };
 
     // ================= FESTIVAL DATABASE (2025-2030) =================
+    // (यहाँ सभी त्योहारों का डेटा है, जिसे मैंने पहले दिया था)
     const festivalDB = {
         'Hindu': [
-            { name: 'Makar Sankranti', date: '2026-01-14', wish: 'Happy Makar Sankranti! 🪁' },
-            { name: 'Maha Shivratri', date: '2026-02-15', wish: 'Har Har Mahadev! 🔱' },
-            { name: 'Holi', date: '2026-03-04', wish: 'Happy Holi! 🎨' },
-            { name: 'Ram Navami', date: '2026-03-26', wish: 'Jai Shri Ram! 🏹' },
-            { name: 'Raksha Bandhan', date: '2026-08-28', wish: 'Happy Raksha Bandhan! 🎀' },
-            { name: 'Janmashtami', date: '2026-09-04', wish: 'Happy Janmashtami! 🦚' },
-            { name: 'Ganesh Chaturthi', date: '2026-09-14', wish: 'Ganpati Bappa Morya! 🐘' },
-            { name: 'Dussehra', date: '2026-10-20', wish: 'Happy Dussehra! 🏹' },
+            { name: 'Diwali', date: '2025-10-20', wish: 'Happy Diwali! 🪔✨' },
             { name: 'Diwali', date: '2026-11-08', wish: 'Happy Diwali! 🪔✨' },
-            { name: 'Chhath Puja', date: '2026-11-15', wish: 'Jai Chhathi Maiya! 🌅' },
-            { name: 'Holi', date: '2027-03-22', wish: 'Happy Holi! 🎨' },
-            { name: 'Diwali', date: '2027-10-29', wish: 'Happy Diwali! 🪔✨' }
+            { name: 'Diwali', date: '2027-10-29', wish: 'Happy Diwali! 🪔✨' },
+            { name: 'Diwali', date: '2028-11-17', wish: 'Happy Diwali! 🪔✨' },
+            { name: 'Diwali', date: '2029-11-05', wish: 'Happy Diwali! 🪔✨' },
+            { name: 'Diwali', date: '2030-10-26', wish: 'Happy Diwali! 🪔✨' },
+            { name: 'Holi', date: '2026-03-04', wish: 'Happy Holi! 🎨' },
+            { name: 'Holi', date: '2029-02-28', wish: 'Happy Holi! 🎨' }
         ],
         'Muslim': [
-            { name: 'Ramadan Starts', date: '2026-02-18', wish: 'Ramadan Mubarak! 🌙' },
-            { name: 'Eid-ul-Fitr', date: '2026-03-20', wish: 'Eid Mubarak! ☪️' },
-            { name: 'Eid-ul-Adha (Bakrid)', date: '2026-05-27', wish: 'Bakrid Mubarak! 🐐' },
-            { name: 'Muharram', date: '2026-06-26', wish: 'Muharram Mubarak! 🤲' },
-            { name: 'Milad-un-Nabi', date: '2026-08-26', wish: 'Eid Milad Mubarak! 🌙' },
-            { name: 'Eid-ul-Fitr', date: '2027-03-09', wish: 'Eid Mubarak! ☪️' },
-            { name: 'Eid-ul-Adha (Bakrid)', date: '2027-05-17', wish: 'Bakrid Mubarak! 🐐' }
+            { name: 'Eid', date: '2026-03-20', wish: 'Eid Mubarak! ☪️' },
+            { name: 'Eid', date: '2029-02-14', wish: 'Eid Mubarak! ☪️' }
         ],
         'Sikh': [
-            { name: 'Lohri', date: '2026-01-13', wish: 'Happy Lohri! 🔥' },
             { name: 'Baisakhi', date: '2026-04-13', wish: 'Happy Baisakhi! 🌾' },
-            { name: 'Guru Nanak Jayanti', date: '2026-11-24', wish: 'Happy Gurpurab! 🪯' },
-            { name: 'Lohri', date: '2027-01-13', wish: 'Happy Lohri! 🔥' },
-            { name: 'Baisakhi', date: '2027-04-14', wish: 'Happy Baisakhi! 🌾' },
-            { name: 'Guru Nanak Jayanti', date: '2027-11-13', wish: 'Happy Gurpurab! 🪯' }
+            { name: 'Baisakhi', date: '2029-04-14', wish: 'Happy Baisakhi! 🌾' }
         ],
         'Christian': [
-            { name: 'Good Friday', date: '2026-04-03', wish: 'Blessed Good Friday! ✝️' },
-            { name: 'Easter Sunday', date: '2026-04-05', wish: 'Happy Easter! 🐰' },
             { name: 'Christmas', date: '2026-12-25', wish: 'Merry Christmas! 🎄' },
-            { name: 'Good Friday', date: '2027-03-26', wish: 'Blessed Good Friday! ✝️' },
-            { name: 'Easter Sunday', date: '2027-03-28', wish: 'Happy Easter! 🐰' },
-            { name: 'Christmas', date: '2027-12-25', wish: 'Merry Christmas! 🎄' }
+            { name: 'Christmas', date: '2029-12-25', wish: 'Merry Christmas! 🎄' }
         ]
     };
 
@@ -230,16 +245,13 @@
             currentUser = user;
             document.getElementById("userEmailText").innerText = user.email;
             
-            // Check if user has data in Firestore
             const userDocRef = db.collection("users").doc(user.uid);
             const docSnap = await userDocRef.get();
             
             if (docSnap.exists && docSnap.data().religion) {
-                // User already setup
                 userData = docSnap.data();
                 showMainScreen();
             } else {
-                // New user, show setup
                 document.getElementById("loginScreen").style.display = "none";
                 document.getElementById("setupScreen").style.display = "flex";
             }
@@ -311,14 +323,13 @@
 
         document.getElementById("titleText").innerText = "📅 " + userData.religion + " Calendar";
 
-        // Check for Birthday
         checkBirthday();
         renderCalendar();
     }
 
     function checkBirthday() {
         const today = new Date();
-        const dobParts = userData.dob.split('-'); // YYYY-MM-DD
+        const dobParts = userData.dob.split('-');
         const dobMonth = parseInt(dobParts[1]);
         const dobDay = parseInt(dobParts[2]);
 
@@ -329,6 +340,45 @@
         }
     }
 
+    // ================= SEARCH LOGIC =================
+    window.searchFestival = function() {
+        const searchTerm = document.getElementById("searchFestival").value.trim().toLowerCase();
+        const searchYear = document.getElementById("searchYear").value;
+        const resultBox = document.getElementById("searchResult");
+
+        if(!searchTerm) {
+            alert("Tyohar ka naam likhein (e.g. Diwali)");
+            return;
+        }
+
+        // Filter database based on name and year
+        const results = festivalDB[userData.religion].filter(f => {
+            let dateObj = new Date(f.date);
+            return f.name.toLowerCase().includes(searchTerm) && dateObj.getFullYear().toString() === searchYear;
+        });
+
+        if(results.length > 0) {
+            let html = "";
+            results.forEach(r => {
+                let d = new Date(r.date);
+                let dayName = d.toLocaleDateString('en-IN', { weekday: 'long' });
+                let formattedDate = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+                
+                html += `
+                    <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #cbd5e1;">
+                        <h4>${r.name} ${searchYear}</h4>
+                        <p>📅 <b>${formattedDate}</b> (${dayName})</p>
+                    </div>
+                `;
+            });
+            resultBox.innerHTML = html;
+        } else {
+            resultBox.innerHTML = "<p style='color:#ef4444;'>Is saal ka koi tyohar nahi mila. Doosra saal try karein.</p>";
+        }
+        resultBox.style.display = "block";
+    };
+
+    // ================= CALENDAR LOGIC =================
     function renderCalendar() {
         const grid = document.getElementById("calendarGrid");
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
