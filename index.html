@@ -6,7 +6,7 @@
     <title>My Religion Calendar</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs (Compat Version) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -14,80 +14,50 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         :root {
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --primary: #0f172a;
-            --primary-light: #f1f5f9;
-            --border: #e2e8f0;
+            --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --text-light: #64748b;
+            --primary: #0f172a; --primary-light: #f1f5f9;
         }
-        body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 15px; transition: 0.3s; }
-        .container { max-width: 500px; margin: auto; display: flex; flex-direction: column; min-height: 90vh; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 15px; }
+        .container { max-width: 500px; margin: auto; }
 
-        /* Login Screen */
-        #loginScreen { display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 1; text-align: center; }
-        .login-card { background: white; padding: 40px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; }
-        .login-card h1 { color: #0f172a; font-size: 28px; margin-bottom: 10px; }
-        .login-card p { color: #64748b; margin-bottom: 30px; font-size: 15px; }
-        .google-btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: white; border: 1px solid #cbd5e1; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; color: #333; cursor: pointer; width: 100%; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .google-btn:hover { background: #f8fafc; border-color: #94a3b8; }
-        .google-btn img { width: 24px; }
-
-        /* Setup Screen */
-        #setupScreen { display: none; flex-direction: column; flex: 1; text-align: center; }
-        .setup-card { background: white; padding: 30px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 20px; }
-        .setup-card h2 { margin-bottom: 20px; color: #0f172a; }
-        .input-group { margin-bottom: 25px; text-align: left; }
-        .input-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #475569; }
-        .religion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .religion-btn { padding: 20px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; font-size: 16px; font-weight: 700; color: #333; cursor: pointer; transition: 0.2s; }
-        .religion-btn.selected { border-color: #0f172a; background: #e2e8f0; }
-        input[type="date"] { width: 100%; padding: 15px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 16px; outline: none; }
-        input[type="date"]:focus { border-color: #0f172a; }
-        .save-btn { background: #0f172a; color: white; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px; }
-        .save-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-
-        /* Main Calendar App */
+        /* Login & Setup */
+        #loginScreen, #setupScreen { display: none; flex-direction: column; justify-content: center; flex: 1; text-align: center; }
         #mainScreen { display: none; }
+        .login-card, .setup-card { background: white; padding: 30px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 50px; }
+        .google-btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: white; border: 1px solid #cbd5e1; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; color: #333; cursor: pointer; width: 100%; margin-top: 20px; }
+        .google-btn img { width: 24px; }
+        .religion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .religion-btn { padding: 15px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; }
+        .religion-btn.selected { border-color: #0f172a; background: #e2e8f0; }
+        input[type="date"] { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 16px; margin-bottom: 20px; }
+        .save-btn { background: #0f172a; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; width: 100%; }
+
+        /* Header & UI */
         .header { background: var(--primary); color: white; padding: 20px; border-radius: 16px; margin-bottom: 15px; text-align: center; position: relative; }
-        .header h2 { font-size: 20px; }
-        .header p { font-size: 12px; opacity: 0.8; margin-top: 5px; }
         .logout-btn { position: absolute; right: 15px; top: 20px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 8px; font-size: 11px; cursor: pointer; }
 
         /* Search Box */
         .search-card { background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .search-card h3 { color: var(--primary); font-size: 16px; margin-bottom: 10px; }
         .search-row { display: flex; gap: 10px; }
-        .search-row input[type="text"] { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 15px; }
-        .search-row select { width: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 15px; background: white; }
+        .search-row input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; }
+        .search-row select { width: 100px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; }
         .search-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; margin-top: 10px; cursor: pointer; }
-        .search-result { margin-top: 15px; display: none; background: #e0f2eb; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
-        .search-result h4 { font-size: 16px; color: var(--primary); margin-bottom: 5px; }
-        .search-result p { font-size: 14px; color: #333; }
+        .search-result { margin-top: 15px; display: none; background: #f1f5f9; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
 
-        .calendar-card { background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        /* Calendar */
+        .calendar-card, .events-section { background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .calendar-header h3 { color: var(--primary); font-size: 18px; }
-        .nav-btn { background: var(--primary-light); border: none; color: var(--primary); width: 35px; height: 35px; border-radius: 50%; font-size: 18px; font-weight: bold; cursor: pointer; }
-        
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
         .day-name { font-size: 11px; font-weight: 700; color: #94a3b8; padding: 5px 0; }
         .day-cell { padding: 8px 0; border-radius: 8px; font-size: 14px; font-weight: 600; position: relative; }
         .day-cell.today { background: var(--primary); color: white; }
         .day-cell.has-event { color: #ef4444; }
         .day-cell.has-event::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: #ef4444; border-radius: 50%; }
-
-        .events-section { background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .events-section h3 { color: var(--primary); font-size: 16px; margin-bottom: 15px; }
+        
         .event-item { background: var(--primary-light); border-left: 4px solid var(--primary); padding: 12px; margin-bottom: 10px; border-radius: 8px; }
         .event-title { font-size: 15px; font-weight: 700; color: var(--primary); }
         .event-wish { font-size: 14px; margin: 5px 0; }
         .event-date { font-size: 12px; color: #64748b; font-weight: 600; }
-        .copy-btn { background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 5px; }
-        
-        /* Birthday Banner */
-        .birthday-banner { background: linear-gradient(135deg, #f59e0b, #ea580c); color: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: 700; display: none; }
     </style>
 </head>
 <body>
@@ -95,7 +65,7 @@
 <div class="container">
     
     <!-- 1. LOGIN SCREEN -->
-    <div id="loginScreen">
+    <div id="loginScreen" style="display:flex;">
         <div class="login-card">
             <h1>🙏 My Religion Calendar</h1>
             <p>Apne tyohar aur birthday wishes payein.</p>
@@ -110,27 +80,19 @@
     <div id="setupScreen">
         <div class="setup-card">
             <h2>Apni Details Bharein</h2>
-            
-            <div class="input-group">
-                <label>Apna Dharm Chunein</label>
-                <div class="religion-grid">
-                    <div class="religion-btn" id="btn-Hindu" onclick="selectSetupReligion('Hindu')">🕉️ Hindu</div>
-                    <div class="religion-btn" id="btn-Muslim" onclick="selectSetupReligion('Muslim')">☪️ Muslim</div>
-                    <div class="religion-btn" id="btn-Sikh" onclick="selectSetupReligion('Sikh')">🪯 Sikh</div>
-                    <div class="religion-btn" id="btn-Christian" onclick="selectSetupReligion('Christian')">✝️ Christian</div>
-                </div>
+            <div class="religion-grid">
+                <div class="religion-btn" id="btn-Hindu" onclick="selectSetupReligion('Hindu')">🕉️ Hindu</div>
+                <div class="religion-btn" id="btn-Muslim" onclick="selectSetupReligion('Muslim')">☪️ Muslim</div>
+                <div class="religion-btn" id="btn-Sikh" onclick="selectSetupReligion('Sikh')">🪯 Sikh</div>
+                <div class="religion-btn" id="btn-Christian" onclick="selectSetupReligion('Christian')">✝️ Christian</div>
             </div>
-
-            <div class="input-group">
-                <label>Apni Date of Birth (Janmdin)</label>
-                <input type="date" id="setupDOB">
-            </div>
-
+            <label>Apni Date of Birth</label>
+            <input type="date" id="setupDOB" onchange="checkSetupReady()">
             <button class="save-btn" id="saveSetupBtn" onclick="saveSetupData()" disabled>Save & Continue</button>
         </div>
     </div>
 
-    <!-- 3. MAIN CALENDAR APP -->
+    <!-- 3. MAIN SCREEN -->
     <div id="mainScreen">
         <div class="header">
             <h2 id="titleText">📅 Calendar</h2>
@@ -138,15 +100,11 @@
             <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
 
-        <div id="birthdayBanner" class="birthday-banner">
-            🎂 Happy Birthday! Aapko janmdin ki hardik shubhkamnayein! 🎉
-        </div>
-
         <!-- SEARCH BOX -->
         <div class="search-card">
-            <h3>🔍 Search Tyohar (Festival)</h3>
+            <h3 style="color:var(--primary); font-size:16px; margin-bottom:10px;">🔍 Search Tyohar</h3>
             <div class="search-row">
-                <input type="text" id="searchFestival" placeholder="e.g. Diwali, Holi, Eid">
+                <input type="text" id="searchFestival" placeholder="e.g. Diwali">
                 <select id="searchYear">
                     <option value="2025">2025</option>
                     <option value="2026">2026</option>
@@ -156,23 +114,21 @@
                     <option value="2030">2030</option>
                 </select>
             </div>
-            <button class="search-btn" onclick="searchFestival()">Search Now</button>
-            <div id="searchResult" class="search-result">
-                <!-- Search result will appear here -->
-            </div>
+            <button class="search-btn" onclick="searchFestival()">Search</button>
+            <div id="searchResult" class="search-result"></div>
         </div>
 
-        <!-- Calendar -->
+        <!-- CALENDAR -->
         <div class="calendar-card">
             <div class="calendar-header">
                 <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
-                <h3 id="monthYearDisplay">Month Year</h3>
+                <h3 id="monthYearDisplay"></h3>
                 <button class="nav-btn" onclick="changeMonth(1)">❯</button>
             </div>
             <div class="calendar-grid" id="calendarGrid"></div>
         </div>
 
-        <!-- Events -->
+        <!-- EVENTS -->
         <div class="events-section">
             <h3 id="eventsTitle">🎉 Events</h3>
             <div id="festivalList"></div>
@@ -182,14 +138,14 @@
 </div>
 
 <script>
-    // ================= FIREBASE CONFIGURATION =================
+    // ================= 🔴 NEW FIREBASE CONFIGURATION 🔴 =================
     const firebaseConfig = {
-        apiKey: "AIzaSyDS--FcIklOPuekaVU6GoI_oYAwBBHYhqk",
-        authDomain: "mobile-repairing-details-971.firebaseapp.com",
-        projectId: "mobile-repairing-details-971",
-        storageBucket: "mobile-repairing-details-971.firebasestorage.app",
-        messagingSenderId: "757152848434",
-        appId: "1:757152848434:web:6dcec6f801cc4a10033a2b"
+        apiKey: "AIzaSyDLGmIPpKC0pYFEv1-4OS7idMuXMFuFi9A",
+        authDomain: "my-new-calendar-app-13d6d.firebaseapp.com",
+        projectId: "my-new-calendar-app-13d6d",
+        storageBucket: "my-new-calendar-app-13d6d.firebasestorage.app",
+        messagingSenderId: "649457734777",
+        appId: "1:649457734777:web:cc79e409a26fcc304ff0a8"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -199,12 +155,11 @@
 
     let currentUser = null;
     let userData = null;
-    
+    let allFestivals = []; 
     let selectedSetupReligion = "";
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
 
-    // ================= THEME COLORS =================
     const themes = {
         'Hindu': { primary: '#ea580c', light: '#ffedd5' }, // Orange
         'Muslim': { primary: '#15803d', light: '#dcfce7' }, // Green
@@ -212,44 +167,17 @@
         'Christian': { primary: '#475569', light: '#f1f5f9' } // Slate
     };
 
-    // ================= FESTIVAL DATABASE (2025-2030) =================
-    // (यहाँ सभी त्योहारों का डेटा है, जिसे मैंने पहले दिया था)
-    const festivalDB = {
-        'Hindu': [
-            { name: 'Diwali', date: '2025-10-20', wish: 'Happy Diwali! 🪔✨' },
-            { name: 'Diwali', date: '2026-11-08', wish: 'Happy Diwali! 🪔✨' },
-            { name: 'Diwali', date: '2027-10-29', wish: 'Happy Diwali! 🪔✨' },
-            { name: 'Diwali', date: '2028-11-17', wish: 'Happy Diwali! 🪔✨' },
-            { name: 'Diwali', date: '2029-11-05', wish: 'Happy Diwali! 🪔✨' },
-            { name: 'Diwali', date: '2030-10-26', wish: 'Happy Diwali! 🪔✨' },
-            { name: 'Holi', date: '2026-03-04', wish: 'Happy Holi! 🎨' },
-            { name: 'Holi', date: '2029-02-28', wish: 'Happy Holi! 🎨' }
-        ],
-        'Muslim': [
-            { name: 'Eid', date: '2026-03-20', wish: 'Eid Mubarak! ☪️' },
-            { name: 'Eid', date: '2029-02-14', wish: 'Eid Mubarak! ☪️' }
-        ],
-        'Sikh': [
-            { name: 'Baisakhi', date: '2026-04-13', wish: 'Happy Baisakhi! 🌾' },
-            { name: 'Baisakhi', date: '2029-04-14', wish: 'Happy Baisakhi! 🌾' }
-        ],
-        'Christian': [
-            { name: 'Christmas', date: '2026-12-25', wish: 'Merry Christmas! 🎄' },
-            { name: 'Christmas', date: '2029-12-25', wish: 'Merry Christmas! 🎄' }
-        ]
-    };
-
-    // ================= AUTH & DATABASE LOGIC =================
+    // ================= AUTH & DATA LOADING =================
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             currentUser = user;
             document.getElementById("userEmailText").innerText = user.email;
             
-            const userDocRef = db.collection("users").doc(user.uid);
-            const docSnap = await userDocRef.get();
+            const userDoc = await db.collection("users").doc(user.uid).get();
             
-            if (docSnap.exists && docSnap.data().religion) {
-                userData = docSnap.data();
+            if (userDoc.exists && userDoc.data().religion) {
+                userData = userDoc.data();
+                await loadFestivals(); 
                 showMainScreen();
             } else {
                 document.getElementById("loginScreen").style.display = "none";
@@ -257,26 +185,33 @@
             }
         } else {
             currentUser = null;
-            userData = null;
             document.getElementById("loginScreen").style.display = "flex";
             document.getElementById("setupScreen").style.display = "none";
             document.getElementById("mainScreen").style.display = "none";
         }
     });
 
-    window.loginWithGoogle = async function() {
+    // ================= FIREBASE SE त्योहार लोड करना =================
+    async function loadFestivals() {
         try {
-            await auth.signInWithPopup(provider);
-        } catch (error) {
-            alert("Login Failed: " + error.message);
+            const snapshot = await db.collection("festivals").get();
+            allFestivals = [];
+            snapshot.forEach(doc => {
+                allFestivals.push(doc.data());
+            });
+        } catch (e) {
+            console.log("Error loading festivals: " + e.message);
         }
-    };
+    }
 
-    window.logout = function() {
-        if(confirm("Logout karna chahte hain?")) auth.signOut();
+    // ================= LOGIN & SETUP =================
+    window.loginWithGoogle = async function() {
+        try { await auth.signInWithPopup(provider); } 
+        catch (e) { alert("Login Failed: " + e.message); }
     };
+    
+    window.logout = function() { if(confirm("Logout?")) auth.signOut(); };
 
-    // ================= SETUP LOGIC =================
     window.selectSetupReligion = function(religion) {
         selectedSetupReligion = religion;
         document.querySelectorAll('.religion-btn').forEach(btn => btn.classList.remove('selected'));
@@ -286,11 +221,8 @@
 
     window.checkSetupReady = function() {
         const dob = document.getElementById("setupDOB").value;
-        const btn = document.getElementById("saveSetupBtn");
-        btn.disabled = !(selectedSetupReligion && dob);
+        document.getElementById("saveSetupBtn").disabled = !(selectedSetupReligion && dob);
     };
-
-    document.getElementById("setupDOB").addEventListener("change", checkSetupReady);
 
     window.saveSetupData = async function() {
         const dob = document.getElementById("setupDOB").value;
@@ -302,83 +234,27 @@
                 dob: dob,
                 email: currentUser.email
             });
-            
             userData = { religion: selectedSetupReligion, dob: dob };
+            await loadFestivals();
             showMainScreen();
-        } catch (e) {
-            alert("Error saving data: " + e.message);
-        }
+        } catch (e) { alert("Error: " + e.message); }
     };
 
-    // ================= MAIN APP LOGIC =================
+    // ================= UI LOGIC =================
     function showMainScreen() {
         document.getElementById("loginScreen").style.display = "none";
         document.getElementById("setupScreen").style.display = "none";
         document.getElementById("mainScreen").style.display = "block";
 
-        // Apply Theme
         const theme = themes[userData.religion];
         document.documentElement.style.setProperty('--primary', theme.primary);
         document.documentElement.style.setProperty('--primary-light', theme.light);
 
         document.getElementById("titleText").innerText = "📅 " + userData.religion + " Calendar";
-
-        checkBirthday();
         renderCalendar();
     }
 
-    function checkBirthday() {
-        const today = new Date();
-        const dobParts = userData.dob.split('-');
-        const dobMonth = parseInt(dobParts[1]);
-        const dobDay = parseInt(dobParts[2]);
-
-        if ((today.getMonth() + 1) === dobMonth && today.getDate() === dobDay) {
-            document.getElementById("birthdayBanner").style.display = "block";
-        } else {
-            document.getElementById("birthdayBanner").style.display = "none";
-        }
-    }
-
-    // ================= SEARCH LOGIC =================
-    window.searchFestival = function() {
-        const searchTerm = document.getElementById("searchFestival").value.trim().toLowerCase();
-        const searchYear = document.getElementById("searchYear").value;
-        const resultBox = document.getElementById("searchResult");
-
-        if(!searchTerm) {
-            alert("Tyohar ka naam likhein (e.g. Diwali)");
-            return;
-        }
-
-        // Filter database based on name and year
-        const results = festivalDB[userData.religion].filter(f => {
-            let dateObj = new Date(f.date);
-            return f.name.toLowerCase().includes(searchTerm) && dateObj.getFullYear().toString() === searchYear;
-        });
-
-        if(results.length > 0) {
-            let html = "";
-            results.forEach(r => {
-                let d = new Date(r.date);
-                let dayName = d.toLocaleDateString('en-IN', { weekday: 'long' });
-                let formattedDate = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-                
-                html += `
-                    <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #cbd5e1;">
-                        <h4>${r.name} ${searchYear}</h4>
-                        <p>📅 <b>${formattedDate}</b> (${dayName})</p>
-                    </div>
-                `;
-            });
-            resultBox.innerHTML = html;
-        } else {
-            resultBox.innerHTML = "<p style='color:#ef4444;'>Is saal ka koi tyohar nahi mila. Doosra saal try karein.</p>";
-        }
-        resultBox.style.display = "block";
-    };
-
-    // ================= CALENDAR LOGIC =================
+    // ================= CALENDAR =================
     function renderCalendar() {
         const grid = document.getElementById("calendarGrid");
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -387,15 +263,13 @@
         document.getElementById("eventsTitle").innerText = `🎉 Events in ${monthNames[currentMonth]} ${currentYear}`;
 
         grid.innerHTML = "";
-        const days = ["S", "M", "T", "W", "T", "F", "S"];
-        days.forEach(d => grid.innerHTML += `<div class="day-name">${d}</div>`);
+        ["S", "M", "T", "W", "T", "F", "S"].forEach(d => grid.innerHTML += `<div class="day-name">${d}</div>`);
 
         const firstDay = new Date(currentYear, currentMonth, 1).getDay();
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        const today = new Date();
-        const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
-        let monthEvents = festivalDB[userData.religion].filter(f => {
+        let monthEvents = allFestivals.filter(f => {
+            if(!f.date || f.religion !== userData.religion) return false;
             let d = new Date(f.date);
             return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
         });
@@ -407,7 +281,6 @@
             const hasEvent = monthEvents.some(e => e.date === dateStr);
             
             let classes = "day-cell";
-            if(dateStr === todayStr) classes += " today";
             if(hasEvent) classes += " has-event";
 
             grid.innerHTML += `<div class="${classes}">${d}</div>`;
@@ -419,12 +292,10 @@
     function renderEventList(events) {
         const list = document.getElementById("festivalList");
         list.innerHTML = "";
-
         if(events.length === 0) {
             list.innerHTML = "<p style='font-size:14px; color:#666;'>Koi tyohar nahi hai.</p>";
             return;
         }
-
         events.forEach(f => {
             let displayDate = f.date.split('-').reverse().join('/');
             list.innerHTML += `
@@ -432,7 +303,6 @@
                     <div class="event-title">${f.name}</div>
                     <div class="event-date">📅 ${displayDate}</div>
                     <div class="event-wish">${f.wish}</div>
-                    <button class="copy-btn" onclick="copyWish('${f.wish}')">📋 Copy</button>
                 </div>
             `;
         });
@@ -445,10 +315,33 @@
         renderCalendar();
     };
 
-    window.copyWish = function(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            alert("✅ Wish Copied!");
+    // ================= SEARCH LOGIC =================
+    window.searchFestival = function() {
+        const term = document.getElementById("searchFestival").value.trim().toLowerCase();
+        const year = document.getElementById("searchYear").value;
+        const resultBox = document.getElementById("searchResult");
+
+        if(!term) return alert("Tyohar ka naam likhein!");
+
+        const results = allFestivals.filter(f => {
+            if(!f.date || f.religion !== userData.religion) return false;
+            let dateObj = new Date(f.date);
+            return f.name.toLowerCase().includes(term) && dateObj.getFullYear().toString() === year;
         });
+
+        if(results.length > 0) {
+            let html = "";
+            results.forEach(r => {
+                let d = new Date(r.date);
+                let dayName = d.toLocaleDateString('en-IN', { weekday: 'long' });
+                let formattedDate = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+                html += `<p>📅 <b>${formattedDate}</b> (${dayName})</p>`;
+            });
+            resultBox.innerHTML = html;
+        } else {
+            resultBox.innerHTML = "<p style='color:#ef4444;'>Is saal ka koi tyohar nahi mila.</p>";
+        }
+        resultBox.style.display = "block";
     };
 </script>
 
